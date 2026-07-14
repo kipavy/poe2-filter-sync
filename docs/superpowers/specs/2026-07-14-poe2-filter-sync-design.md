@@ -51,7 +51,7 @@ On découpe donc :
 poe2-filter-sync/
   sounds/                     # mp3 versionnés
   config/
-    sound-mapping.psd1        # données de mapping (voir plus bas)
+    sound-mapping.json        # données de mapping (voir plus bas)
   src/
     Build-Filter.ps1          # CŒUR partagé : download NeverSink -> applique sons -> valide
     Install-Sounds.ps1        # copie les mp3 dans le dossier POE2
@@ -94,7 +94,7 @@ GitHub Action (cloud) et par le mode `-Full` du script local. Zéro divergence e
 
 **Sons seuls (défaut) :** `Sync-Poe2Filter.ps1` → copie les mp3 dans le dossier POE2.
 
-## Format de config (`sound-mapping.psd1`)
+## Format de config (`sound-mapping.json`)
 
 Sépare les **données** du **code**. Deux sections :
 
@@ -103,6 +103,21 @@ Sépare les **données** du **code**. Deux sections :
    `sounds/`. Aucune édition de texte : survit aux updates NeverSink.
 2. **Overrides ciblés (fragile, à valider)** — `identifier` (`$type->… $tier->…`) → `{ fichier,
    volume }`. Le volume devient **par-mapping** (fini le `300` figé).
+
+Esquisse de forme (à affiner au plan) :
+
+```json
+{
+  "fileReplacements": {
+    "1maybevaluable.mp3": "maybevaluable.mp3",
+    "6veryvaluable.mp3": "veryvaluable.mp3"
+  },
+  "targetedOverrides": [
+    { "identifier": "$type->waystones $tier->waystone_t16", "file": "TRIPLE_MONSTRE.mp3", "volume": 300 },
+    { "identifier": "$type->currency $tier->d", "file": "gay-echo.mp3", "volume": 300 }
+  ]
+}
+```
 
 ## Gestion des erreurs & validation (objectif A)
 
@@ -126,6 +141,16 @@ Sépare les **données** du **code**. Deux sections :
 - Support multi-jeux (PoE1) : non.
 - UI / interface graphique : non.
 - Gestion de plusieurs profils de filtres : non (un seul filtre).
+
+## Livrable final : message Discord d'installation
+
+Une fois le tout en place, produire un **message prêt à coller sur Discord** expliquant
+l'installation à la communauté, dans l'esprit du bloc d'origine :
+
+- Comment **suivre / sélectionner le filtre en ligne** en jeu (pour recevoir les updates auto).
+- Le **one-liner** d'installation des sons (Win+R / copier-coller) + les **étapes manuelles**
+  équivalentes (télécharger, débloquer, exécuter).
+- Mention du mode **`-Full`** en secours si besoin.
 
 ## Critères de succès
 
