@@ -10,11 +10,11 @@ Filtre d'items **NeverSink** (strictness *Strict*) avec mes **sons personnalisé
 powershell -c "[Net.ServicePointManager]::SecurityProtocol='Tls12'; &([scriptblock]::Create((irm https://tinyurl.com/2b2xuyal))) -Full"
 ```
 
-Pas besoin d'admin. Ça télécharge le dernier filtre NeverSink, applique les sons custom, et copie le filtre **et** les .mp3 dans ton dossier `Documents\My Games\Path of Exile 2`.
+Pas besoin d'admin. Ça télécharge le dernier filtre NeverSink, applique les sons custom, et copie **toutes les variantes de strictness** (Soft → Uber Plus Strict) **et** les .mp3 dans ton dossier `Documents\My Games\Path of Exile 2`.
 
 ## 🎮 En jeu
 
-Options → **Item Filter** → sélectionne **`NeverSink + custom sounds`** dans la liste → *Reload*. C'est prêt.
+Options → **Item Filter** → choisis parmi les variantes installées celle qui correspond à la strictness que tu veux (ex. `...3-STRICT (customsounds)`) → *Reload*. C'est prêt.
 
 ## 🔁 Mettre à jour
 

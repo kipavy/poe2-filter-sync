@@ -33,9 +33,11 @@ if ($Full) {
     $work = Join-Path ([System.IO.Path]::GetTempPath()) 'poe2-filter-build'
     Write-Host "Downloading NeverSink..."
     $styleDir = Get-NeverSinkFilterDir -DestDir $work
-    $srcFilter = Find-SourceFilter -Dir $styleDir -Match $mapping.SourceFilterMatch
-    $built = Build-Filter -SourceFilterPath $srcFilter -Mapping $mapping -OutDir $work
-    $dest = Join-Path $Poe2Dir ("{0}.filter" -f $mapping.PoeFilterName)
-    Copy-Item -Path $built.FilterPath -Destination $dest -Force
-    Write-Host "Full build installed locally: $dest"
+    $sources = Get-AllSourceFilters -Dir $styleDir
+    $built = Build-AllFilters -SourceFilterPaths $sources -Mapping $mapping -OutDir $work
+    foreach ($item in $built) {
+        $dest = Join-Path $Poe2Dir $item.Name
+        Copy-Item -Path $item.FilterPath -Destination $dest -Force
+    }
+    Write-Host ("Installed {0} filter variants into: {1}" -f $built.Count, $Poe2Dir)
 }
