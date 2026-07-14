@@ -1,0 +1,16 @@
+# NeverSink-style sample for tests
+Show # $type->currency $tier->d
+    BaseType "Chaos Orb"
+    PlayAlertSound 1 300
+    SetTextColor 255 255 255
+
+Show # $type->currency $tier->e
+    BaseType "Exalted Orb"
+    CustomAlertSound "old-existing.mp3" 200
+
+Hide # $type->currency $tier->hidden
+    BaseType "Scroll of Wisdom"
+
+Show # $type->waystones $tier->waystone_t16
+    Class "Waystones"
+    PlayAlertSound 6 300

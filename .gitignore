@@ -1,0 +1,5 @@
+# build output
+out/
+*.zip
+# temp
+temp_*
