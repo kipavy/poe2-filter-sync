@@ -24,4 +24,28 @@ Describe 'Build-Filter' {
         { Build-Filter -SourceFilterPath "$PSScriptRoot/fixtures/sample.filter" -Mapping $bad -OutDir $out } |
             Should -Throw -ExpectedMessage '*nope*'
     }
+    It 'preserves non-ASCII UTF-8 characters and writes LF with no BOM' {
+        # NeverSink filters contain UTF-8 chars (e.g. "Mórrigan's Insight"). PS 5.1's
+        # ANSI default Get/Set-Content corrupts them per machine — the build must be byte-faithful.
+        $srcDir = Join-Path $TestDrive 'enc'; New-Item -ItemType Directory -Path $srcDir | Out-Null
+        $src = Join-Path $srcDir 'src.filter'
+        # Build the 'ó' (U+00F3) from its code point so this test does not depend on how
+        # PowerShell 5.1 decodes THIS .ps1 file (the very bug under test).
+        $oAcute = [char]0x00F3
+        $content = "Show # `$type->currency `$tier->d !x`r`n    BaseType `"M${oAcute}rrigan's Insight`"`r`n"
+        [System.IO.File]::WriteAllText($src, $content, (New-Object System.Text.UTF8Encoding($false)))
+        $out = Join-Path $TestDrive 'encout'
+        $m = [pscustomobject]@{ TargetedOverrides = @(
+            [pscustomobject]@{ Identifier = '$type->currency $tier->d'; File = 'gay-echo.mp3'; Volume = 300 }) }
+        $r = Build-Filter -SourceFilterPath $src -Mapping $m -OutDir $out
+        $bytes = [System.IO.File]::ReadAllBytes($r.FilterPath)
+        # UTF-8 'ó' is 0xC3 0xB3 — must survive intact
+        $hasOAcute = $false
+        for ($i = 0; $i -lt $bytes.Length - 1; $i++) { if ($bytes[$i] -eq 0xC3 -and $bytes[$i+1] -eq 0xB3) { $hasOAcute = $true; break } }
+        $hasOAcute | Should -BeTrue
+        # No BOM (must not start with EF BB BF)
+        ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) | Should -BeFalse
+        # No CR bytes (LF-only)
+        ($bytes -contains 0x0D) | Should -BeFalse
+    }
 }
