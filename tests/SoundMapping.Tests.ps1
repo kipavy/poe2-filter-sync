@@ -22,4 +22,14 @@ Describe 'Get-SoundMapping' {
         { Get-SoundMapping -Path $script:cfgPath -SoundsDir $script:soundsDir } |
             Should -Throw -ExpectedMessage '*gay-echo.mp3*'
     }
+    It 'throws when the config file path does not exist' {
+        { Get-SoundMapping -Path (Join-Path $TestDrive 'nonexistent.json') -SoundsDir $script:soundsDir } |
+            Should -Throw -ExpectedMessage '*Config not found*'
+    }
+    It 'throws when the config file contains invalid JSON' {
+        $invalidPath = Join-Path $TestDrive 'invalid.json'
+        Set-Content -Path $invalidPath -Value '{ not valid json'
+        { Get-SoundMapping -Path $invalidPath -SoundsDir $script:soundsDir } |
+            Should -Throw -ExpectedMessage '*Invalid JSON*'
+    }
 }
