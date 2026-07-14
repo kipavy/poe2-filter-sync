@@ -3,7 +3,7 @@
   "poeFilterName": "NeverSink + custom sounds",
   "sourceFilterMatch": "3-STRICT",
   "followUrls": [
-    "https://www.pathofexile.com/account/view-profile/YOUR_NAME/item-filters"
+    "https://www.pathofexile.com/account/view-profile/YOUR_POE_ACCOUNT/item-filters"
   ],
   "fileReplacements": {
     "1maybevaluable.mp3": "1maybevaluable.mp3",
@@ -14,7 +14,16 @@
     "6veryvaluable.mp3": "6veryvaluable.mp3"
   },
   "targetedOverrides": [
+    { "identifier": "$type->gems->uncut $tier->otherskilleg", "file": "dramatic_fart.mp3", "volume": 300 },
     { "identifier": "$type->currency $tier->d", "file": "gay-echo.mp3", "volume": 300 },
+    { "identifier": "$type->currency->essence $tier->d", "file": "3uniques.mp3", "volume": 300 },
+    { "identifier": "$type->waystones $tier->waystone_t1", "file": "3uniques.mp3", "volume": 300 },
+    { "identifier": "$type->waystones $tier->waystone_t2", "file": "3uniques.mp3", "volume": 300 },
+    { "identifier": "$type->waystones $tier->waystone_t3", "file": "3uniques.mp3", "volume": 300 },
+    { "identifier": "$type->waystones $tier->waystone_t4", "file": "3uniques.mp3", "volume": 300 },
+    { "identifier": "$type->waystones $tier->waystone_t5", "file": "3uniques.mp3", "volume": 300 },
+    { "identifier": "$type->waystones $tier->waystone_t6", "file": "3uniques.mp3", "volume": 300 },
+    { "identifier": "$type->waystones $tier->decomap1", "file": "5highmaps.mp3", "volume": 300 },
     { "identifier": "$type->waystones $tier->waystone_t16", "file": "TRIPLE_MONSTRE.mp3", "volume": 300 }
   ]
 }
