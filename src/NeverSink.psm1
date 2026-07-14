@@ -8,12 +8,12 @@ function Get-NeverSinkFilterDir {
     $zipUrl = 'https://github.com/NeverSinkDev/NeverSink-Filter-for-PoE2/archive/refs/heads/main.zip'
     try {
         $rel = Invoke-RestMethod 'https://api.github.com/repos/NeverSinkDev/NeverSink-Filter-for-PoE2/releases/latest' `
-            -Headers @{ 'User-Agent' = 'poe2-filter-sync' }
+            -Headers @{ 'User-Agent' = 'poe2-filter-sync' } -UseBasicParsing
         if ($rel.zipball_url) { $zipUrl = $rel.zipball_url }
     } catch { Write-Warning "No release found, falling back to main.zip: $_" }
 
     $zip = Join-Path $DestDir 'neversink.zip'
-    Invoke-WebRequest -Uri $zipUrl -OutFile $zip -Headers @{ 'User-Agent' = 'poe2-filter-sync' }
+    Invoke-WebRequest -Uri $zipUrl -OutFile $zip -Headers @{ 'User-Agent' = 'poe2-filter-sync' } -UseBasicParsing
     Expand-Archive -Path $zip -DestinationPath $DestDir -Force
     Remove-Item $zip
 
