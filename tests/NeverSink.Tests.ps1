@@ -28,3 +28,27 @@ Describe 'Find-SourceFilter' {
         (Find-SourceFilter -Dir $script:dir -Match '3-STRICT') | Should -Match '3-STRICT'
     }
 }
+
+Describe 'Get-AllSourceFilters' {
+    BeforeEach {
+        $script:dir = Join-Path $TestDrive ([guid]::NewGuid())
+        New-Item -ItemType Directory -Path $script:dir | Out-Null
+    }
+    It 'returns all .filter files in the dir, sorted by name' {
+        New-Item -ItemType File -Path (Join-Path $script:dir "NeverSink's filter 2 - 3-STRICT (customsounds) .filter") | Out-Null
+        New-Item -ItemType File -Path (Join-Path $script:dir "NeverSink's filter 2 - 0-SOFT (customsounds) .filter") | Out-Null
+        New-Item -ItemType File -Path (Join-Path $script:dir "NeverSink's filter 2 - 1-REGULAR (customsounds) .filter") | Out-Null
+        New-Item -ItemType File -Path (Join-Path $script:dir 'readme.txt') | Out-Null
+        $result = Get-AllSourceFilters -Dir $script:dir
+        $result.Count | Should -Be 3
+        ($result | ForEach-Object { Split-Path $_ -Leaf }) | Should -Be @(
+            "NeverSink's filter 2 - 0-SOFT (customsounds) .filter",
+            "NeverSink's filter 2 - 1-REGULAR (customsounds) .filter",
+            "NeverSink's filter 2 - 3-STRICT (customsounds) .filter"
+        )
+    }
+    It 'throws when the dir has no .filter files' {
+        New-Item -ItemType File -Path (Join-Path $script:dir 'readme.txt') | Out-Null
+        { Get-AllSourceFilters -Dir $script:dir } | Should -Throw
+    }
+}

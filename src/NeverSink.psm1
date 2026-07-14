@@ -34,4 +34,14 @@ function Find-SourceFilter {
     if ($hits.Count -gt 1) { throw "Multiple .filter files match '$Match': $($hits.Name -join ', ')." }
     return $hits[0].FullName
 }
-Export-ModuleMember -Function Get-NeverSinkFilterDir, Find-SourceFilter
+function Get-AllSourceFilters {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Dir
+    )
+    $hits = @(Get-ChildItem -Path $Dir -Filter *.filter | Sort-Object Name)
+    if ($hits.Count -eq 0) { throw "No .filter files found in '$Dir'." }
+    return @($hits.FullName)
+}
+
+Export-ModuleMember -Function Get-NeverSinkFilterDir, Find-SourceFilter, Get-AllSourceFilters
