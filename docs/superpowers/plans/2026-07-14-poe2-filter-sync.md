@@ -12,6 +12,7 @@
 
 - **Windows PowerShell 5.1 compatible** — all local-running code (`install.ps1`, `Sync-Poe2Filter.ps1`, and every `src/*.psm1` module they load) MUST run on stock Windows PowerShell 5.1, so end users need no install. `#requires -Version 5.1`. Avoid PS7-only syntax (`??`, `?.`, ternary, `-AsHashtable`). Tests run under 5.1 with Pester 5; CI runs the same code under `pwsh` on `ubuntu-latest` (5.1-compatible code also runs on 7).
 - **TLS 1.2 for downloads** — any script that calls `Invoke-WebRequest`/`Invoke-RestMethod` must first set `[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12` (5.1 does not negotiate TLS 1.2 by default and GitHub requires it).
+- **`-UseBasicParsing` on all web calls** — every `Invoke-WebRequest`/`Invoke-RestMethod` call must pass `-UseBasicParsing`. On some Windows PowerShell 5.1 machines the IE parsing engine is unavailable and the call throws otherwise; the flag is harmless on PowerShell 7. This matters because the code runs on arbitrary end-user machines.
 - **No admin, non-destructive** — local install writes ONLY the built `.filter` and the mp3 files into the POE2 folder; it never wipes or deletes unrelated files.
 - **POE2 folder path:** `$env:USERPROFILE\Documents\My Games\Path of Exile 2` (overridable by a `-Poe2Dir` parameter for testing).
 - **Config is the single source of mapping data** — no sound filenames, identifiers, or volumes hardcoded in code; all live in `config/sound-mapping.json`.
