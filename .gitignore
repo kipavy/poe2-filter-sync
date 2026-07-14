@@ -3,3 +3,5 @@ out/
 *.zip
 # temp
 temp_*
+# internal build scaffolding (subagent briefs/reports/ledger)
+.superpowers/
