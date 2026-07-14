@@ -1,0 +1,41 @@
+name: sync-filter
+on:
+  schedule:
+    - cron: '0 3 * * *'   # nightly 03:00 UTC
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    env:
+      POE_OAUTH_TOKEN: ${{ secrets.POE_OAUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests
+        shell: pwsh
+        run: ./Invoke-Tests.ps1
+
+      - name: Build & validate filter
+        shell: pwsh
+        run: |
+          Import-Module ./src/SoundMapping.psm1 -Force
+          Import-Module ./src/NeverSink.psm1 -Force
+          Import-Module ./src/BuildFilter.psm1 -Force
+          $mapping = Get-SoundMapping -Path ./config/sound-mapping.json -SoundsDir ./sounds
+          $style = Get-NeverSinkFilterDir -DestDir ./out/neversink
+          $src = Find-SourceFilter -Dir $style -Match $mapping.SourceFilterMatch
+          $built = Build-Filter -SourceFilterPath $src -Mapping $mapping -OutDir ./out
+          "BUILT_FILTER=$($built.FilterPath)" | Out-File $env:GITHUB_ENV -Append
+
+      - name: Publish to PoE account
+        if: ${{ env.POE_OAUTH_TOKEN != '' }}
+        shell: pwsh
+        run: |
+          Import-Module ./src/SoundMapping.psm1 -Force
+          Import-Module ./src/PublishFilter.psm1 -Force
+          $mapping = Get-SoundMapping -Path ./config/sound-mapping.json -SoundsDir ./sounds
+          Publish-Filter -FilterPath $env:BUILT_FILTER -FilterId $mapping.PoeFilterId `
+            -FilterName $mapping.PoeFilterName -Token $env:POE_OAUTH_TOKEN
