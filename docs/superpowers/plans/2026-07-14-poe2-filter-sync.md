@@ -770,7 +770,7 @@ function Publish-Filter {
     $base = 'https://api.pathofexile.com/item-filter'
     $uri  = if ([string]::IsNullOrEmpty($FilterId)) { $base } else { "$base/$FilterId" }
     $headers = @{ Authorization = "Bearer $Token"; 'Content-Type' = 'application/json'; 'User-Agent' = 'poe2-filter-sync' }
-    $body = @{ filter_name = $FilterName; filter = $text; type = 'Normal'; public = $false } | ConvertTo-Json -Depth 5
+    $body = @{ filter_name = $FilterName; filter = $text; type = 'Normal'; public = $false; realm = 'poe2' } | ConvertTo-Json -Depth 5
 
     if (-not $Invoker) {
         $Invoker = { param($Uri,$Method,$Headers,$Body) Invoke-RestMethod -Uri $Uri -Method $Method -Headers $Headers -Body $Body }
