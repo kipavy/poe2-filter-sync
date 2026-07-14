@@ -39,4 +39,13 @@ function Set-CustomAlertSound {
     }
     return [pscustomobject]@{ Lines = $out.ToArray(); MatchCount = $matchCount }
 }
-Export-ModuleMember -Function Set-CustomAlertSound
+
+function Assert-AllMappingsMatched {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][hashtable]$MatchReport)
+    $zero = @($MatchReport.GetEnumerator() | Where-Object { $_.Value -eq 0 } | ForEach-Object { $_.Key })
+    if ($zero.Count -gt 0) {
+        throw "These targeted overrides matched no filter block (NeverSink identifiers may have changed): $($zero -join ', ')"
+    }
+}
+Export-ModuleMember -Function Set-CustomAlertSound, Assert-AllMappingsMatched

@@ -33,3 +33,13 @@ Describe 'Set-CustomAlertSound' {
         $r.MatchCount | Should -Be 0
     }
 }
+
+Describe 'Assert-AllMappingsMatched' {
+    It 'passes when all identifiers matched at least once' {
+        { Assert-AllMappingsMatched -MatchReport @{ 'a' = 1; 'b' = 3 } } | Should -Not -Throw
+    }
+    It 'throws and names every zero-match identifier' {
+        { Assert-AllMappingsMatched -MatchReport @{ 'a' = 1; 'b' = 0; 'c' = 0 } } |
+            Should -Throw -ExpectedMessage '*b*c*'
+    }
+}
