@@ -32,6 +32,11 @@ Describe 'Set-CustomAlertSound' {
         $r = Set-CustomAlertSound -Lines $lines -Identifier '$type->does->not->exist' -File 'x.mp3' -Volume 300
         $r.MatchCount | Should -Be 0
     }
+    It 'accepts blank-line elements in Lines without throwing' {
+        $lines = @('Show # $type->currency $tier->d', '', '    BaseType "Chaos Orb"')
+        { Set-CustomAlertSound -Lines $lines -Identifier '$type->currency $tier->d' -File 'x.mp3' -Volume 300 } |
+            Should -Not -Throw
+    }
 }
 
 Describe 'Assert-AllMappingsMatched' {
