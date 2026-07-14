@@ -7,7 +7,7 @@ function Set-CustomAlertSound {
         [Parameter(Mandatory)][int]$Volume
     )
     $escaped        = [regex]::Escape($Identifier)
-    $reIdentifier   = [regex]::new(".*$escaped\s*$")
+    $reIdentifier   = [regex]::new(".*" + $escaped + '(\s|$)', [System.Text.RegularExpressions.RegexOptions]::Compiled)
     $reHide         = [regex]::new('^\s*Hide')
     $reCustomAlert  = [regex]::new('^\s*CustomAlertSound')
     $reSection      = [regex]::new('^\s*(Show|Hide)')

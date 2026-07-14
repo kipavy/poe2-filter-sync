@@ -37,6 +37,20 @@ Describe 'Set-CustomAlertSound' {
         { Set-CustomAlertSound -Lines $lines -Identifier '$type->currency $tier->d' -File 'x.mp3' -Volume 300 } |
             Should -Not -Throw
     }
+    It 'matches an identifier followed by a NeverSink style-tag suffix' {
+        $lines = @(
+            'Show # %D5 $type->currency $tier->d !currency_stackhigh',
+            '    BaseType "Chaos Orb"'
+        )
+        $r = Set-CustomAlertSound -Lines $lines -Identifier '$type->currency $tier->d' -File 'gay-echo.mp3' -Volume 300
+        $r.MatchCount | Should -Be 1
+        $r.Lines[1] | Should -Be '    CustomAlertSound "gay-echo.mp3" 300'
+    }
+    It 'does not match a longer sibling tier even when a style tag follows' {
+        $lines = @('Show # $type->waystones $tier->waystone_t16 !maps_specialb')
+        $r = Set-CustomAlertSound -Lines $lines -Identifier '$type->waystones $tier->waystone_t1' -File 'x.mp3' -Volume 300
+        $r.MatchCount | Should -Be 0
+    }
 }
 
 Describe 'Assert-AllMappingsMatched' {
