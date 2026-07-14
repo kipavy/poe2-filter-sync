@@ -79,6 +79,10 @@ GitHub Action (cloud) et par le mode `-Full` du script local. Zéro divergence e
   - **défaut** → appelle `Install-Sounds` uniquement (cas courant).
   - **`-Full`** → appelle `Build-Filter` puis installe le `.filter` construit **et** les sons
     en local (filet de sécurité si la pipeline cloud est cassée). Aucun appel à l'API PoE.
+  - **Ouverture navigateur** : en mode défaut (sons seuls), après l'install, le script ouvre le
+    navigateur sur la/les page(s) du/des filtre(s) en ligne pour s'abonner en 1 clic. En mode
+    `-Full`, on **n'ouvre pas** le navigateur (le filtre est déjà installé localement). Les URLs
+    d'abonnement sont dans la config (`followUrls`, liste).
 
 ### Flux de données
 
