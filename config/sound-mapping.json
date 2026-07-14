@@ -1,0 +1,20 @@
+{
+  "poeFilterId": "",
+  "poeFilterName": "NeverSink + custom sounds",
+  "sourceFilterMatch": "STRICT",
+  "followUrls": [
+    "https://www.pathofexile.com/account/view-profile/YOUR_NAME/item-filters"
+  ],
+  "fileReplacements": {
+    "1maybevaluable.mp3": "1maybevaluable.mp3",
+    "2currency.mp3": "2currency.mp3",
+    "3uniques.mp3": "3uniques.mp3",
+    "4maps.mp3": "4maps.mp3",
+    "5highmaps.mp3": "5highmaps.mp3",
+    "6veryvaluable.mp3": "6veryvaluable.mp3"
+  },
+  "targetedOverrides": [
+    { "identifier": "$type->currency $tier->d", "file": "gay-echo.mp3", "volume": 300 },
+    { "identifier": "$type->waystones $tier->waystone_t16", "file": "TRIPLE_MONSTRE.mp3", "volume": 300 }
+  ]
+}
