@@ -10,6 +10,7 @@ Describe 'Publish-Filter' {
         $script:captured.Method | Should -Be 'Post'
         $script:captured.Headers.Authorization | Should -Be 'Bearer TKN'
         ($script:captured.Body | ConvertFrom-Json).filter | Should -Match 'Show'
+        ($script:captured.Body | ConvertFrom-Json).realm | Should -Be 'poe2'
     }
     It 'POSTs to the create endpoint when FilterId is empty' {
         $invoker = { param($Uri,$Method,$Headers,$Body) $script:u = $Uri; @{} }

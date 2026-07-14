@@ -1,7 +1,7 @@
 {
   "poeFilterId": "",
   "poeFilterName": "NeverSink + custom sounds",
-  "sourceFilterMatch": "STRICT",
+  "sourceFilterMatch": "3-STRICT",
   "followUrls": [
     "https://www.pathofexile.com/account/view-profile/YOUR_NAME/item-filters"
   ],

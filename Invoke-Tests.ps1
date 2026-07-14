@@ -4,4 +4,5 @@ if (-not $pester5) {
     Install-Module Pester -MinimumVersion 5.0 -Force -Scope CurrentUser -SkipPublisherCheck
 }
 Import-Module Pester -MinimumVersion 5.0 -Force
-Invoke-Pester -Path "$PSScriptRoot/tests" -Output Detailed
+$result = Invoke-Pester -Path "$PSScriptRoot/tests" -Output Detailed -PassThru
+if ($result.FailedCount -gt 0) { exit 1 }

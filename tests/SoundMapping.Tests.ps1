@@ -13,7 +13,7 @@ Describe 'Get-SoundMapping' {
     It 'parses metadata and sections' {
         $m = Get-SoundMapping -Path $script:cfgPath -SoundsDir $script:soundsDir
         $m.PoeFilterName | Should -Be 'NeverSink + custom sounds'
-        $m.SourceFilterMatch | Should -Be 'STRICT'
+        $m.SourceFilterMatch | Should -Be '3-STRICT'
         $m.TargetedOverrides.Count | Should -Be 2
         $m.TargetedOverrides[0].Volume | Should -Be 300
     }

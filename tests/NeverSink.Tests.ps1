@@ -19,4 +19,12 @@ Describe 'Find-SourceFilter' {
         New-Item -ItemType File -Path (Join-Path $script:dir 'b-STRICT.filter') | Out-Null
         { Find-SourceFilter -Dir $script:dir -Match 'STRICT' } | Should -Throw
     }
+    It 'throws on ambiguous STRICT token but resolves with the full strictness tier name' {
+        New-Item -ItemType File -Path (Join-Path $script:dir "NeverSink's filter 2 - 2-SEMI-STRICT (customsounds) .filter") | Out-Null
+        New-Item -ItemType File -Path (Join-Path $script:dir "NeverSink's filter 2 - 3-STRICT (customsounds) .filter") | Out-Null
+        New-Item -ItemType File -Path (Join-Path $script:dir "NeverSink's filter 2 - 4-VERY-STRICT (customsounds) .filter") | Out-Null
+        New-Item -ItemType File -Path (Join-Path $script:dir "NeverSink's filter 2 - 5-UBER-STRICT (customsounds) .filter") | Out-Null
+        { Find-SourceFilter -Dir $script:dir -Match 'STRICT' } | Should -Throw
+        (Find-SourceFilter -Dir $script:dir -Match '3-STRICT') | Should -Match '3-STRICT'
+    }
 }
