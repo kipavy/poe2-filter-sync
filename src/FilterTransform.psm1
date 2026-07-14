@@ -1,7 +1,7 @@
 function Set-CustomAlertSound {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)][string[]]$Lines,
+        [Parameter(Mandatory)][AllowEmptyString()][string[]]$Lines,
         [Parameter(Mandatory)][string]$Identifier,
         [Parameter(Mandatory)][string]$File,
         [Parameter(Mandatory)][int]$Volume
