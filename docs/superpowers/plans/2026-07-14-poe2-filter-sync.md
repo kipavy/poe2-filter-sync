@@ -6,11 +6,12 @@
 
 **Architecture:** A single shared build core (`Build-Filter`) downloads NeverSink, applies sound mappings from a JSON config, and validates. The GitHub Action calls the core then publishes to the PoE API; the local `Sync-Poe2Filter.ps1` script installs sounds by default and calls the same core under `-Full`. The text transform (inserting `CustomAlertSound` lines) is a pure function on string arrays so it is fully unit-testable without PoE or network.
 
-**Tech Stack:** PowerShell 7 (pwsh), Pester 5 (tests), GitHub Actions (ubuntu-latest runner with pwsh), PoE Item Filter API (`account:item_filter` OAuth scope).
+**Tech Stack:** Windows PowerShell 5.1 (local code), Pester 5 (tests), GitHub Actions (ubuntu-latest runner with pwsh), PoE Item Filter API (`account:item_filter` OAuth scope).
 
 ## Global Constraints
 
-- **PowerShell 7+ (pwsh)** — all scripts and tests target pwsh, not Windows PowerShell 5.1. CI uses `pwsh` on `ubuntu-latest`.
+- **Windows PowerShell 5.1 compatible** — all local-running code (`install.ps1`, `Sync-Poe2Filter.ps1`, and every `src/*.psm1` module they load) MUST run on stock Windows PowerShell 5.1, so end users need no install. `#requires -Version 5.1`. Avoid PS7-only syntax (`??`, `?.`, ternary, `-AsHashtable`). Tests run under 5.1 with Pester 5; CI runs the same code under `pwsh` on `ubuntu-latest` (5.1-compatible code also runs on 7).
+- **TLS 1.2 for downloads** — any script that calls `Invoke-WebRequest`/`Invoke-RestMethod` must first set `[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12` (5.1 does not negotiate TLS 1.2 by default and GitHub requires it).
 - **No admin, non-destructive** — local install writes ONLY the built `.filter` and the mp3 files into the POE2 folder; it never wipes or deletes unrelated files.
 - **POE2 folder path:** `$env:USERPROFILE\Documents\My Games\Path of Exile 2` (overridable by a `-Poe2Dir` parameter for testing).
 - **Config is the single source of mapping data** — no sound filenames, identifiers, or volumes hardcoded in code; all live in `config/sound-mapping.json`.
@@ -104,10 +105,12 @@ Show # $type->waystones $tier->waystone_t16
 
 - [ ] **Step 3: Create `Invoke-Tests.ps1`**
 ```powershell
-#requires -Version 7.0
-if (-not (Get-Module -ListAvailable Pester | Where-Object Version -ge '5.0')) {
-    Install-Module Pester -MinimumVersion 5.0 -Force -Scope CurrentUser
+#requires -Version 5.1
+$pester5 = Get-Module -ListAvailable Pester | Where-Object { $_.Version -ge [version]'5.0' }
+if (-not $pester5) {
+    Install-Module Pester -MinimumVersion 5.0 -Force -Scope CurrentUser -SkipPublisherCheck
 }
+Import-Module Pester -MinimumVersion 5.0 -Force
 Invoke-Pester -Path "$PSScriptRoot/tests" -Output Detailed
 ```
 
@@ -480,6 +483,7 @@ Expected: FAIL — `Find-SourceFilter` not recognized.
 function Get-NeverSinkFilterDir {
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$DestDir)
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     if (Test-Path $DestDir) { Remove-Item $DestDir -Recurse -Force }
     New-Item -ItemType Directory -Path $DestDir | Out-Null
 
@@ -802,7 +806,7 @@ git commit -m "feat: Publish-Filter POST to PoE item-filter API (injectable invo
 
 - [ ] **Step 1: Write `src/Sync-Poe2Filter.ps1`**
 ```powershell
-#requires -Version 7.0
+#requires -Version 5.1
 [CmdletBinding()]
 param(
     [switch]$Full,
@@ -847,10 +851,11 @@ if ($Full) {
 
 - [ ] **Step 2: Create `install.ps1`** (public bootstrapper the one-liner calls)
 ```powershell
-#requires -Version 7.0
+#requires -Version 5.1
 [CmdletBinding()]
 param([switch]$Full)
 $ErrorActionPreference = 'Stop'
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 $repoZip = 'https://github.com/<YOUR_GH_USER>/poe2-filter-sync/archive/refs/heads/main.zip'
 $work = Join-Path ([System.IO.Path]::GetTempPath()) 'poe2-filter-sync'
 if (Test-Path $work) { Remove-Item $work -Recurse -Force }
@@ -973,13 +978,13 @@ En jeu : Options → Item Filter → sélectionne le filtre en ligne **"NeverSin
 **2) Installer les sons (une seule fois)**
 Win+R, colle ça, Entrée :
 ```
-powershell -Command "iwr 'https://raw.githubusercontent.com/<YOUR_GH_USER>/poe2-filter-sync/main/install.ps1' -OutFile \"$env:TEMP\poe2sounds.ps1\"; pwsh -ExecutionPolicy Bypass -File \"$env:TEMP\poe2sounds.ps1\""
+powershell -Command "iwr 'https://raw.githubusercontent.com/<YOUR_GH_USER>/poe2-filter-sync/main/install.ps1' -OutFile \"$env:TEMP\poe2sounds.ps1\"; powershell -ExecutionPolicy Bypass -File \"$env:TEMP\poe2sounds.ps1\""
 ```
 Pas besoin d'admin. Ça copie les sons dans ton dossier Path of Exile 2, puis **ouvre automatiquement la page du filtre** pour que tu t'abonnes en 1 clic (étape 1).
 
 **En secours** (si le filtre en ligne ne se met plus à jour) : reconstruire tout en local avec `-Full` :
 ```
-powershell -Command "iwr 'https://raw.githubusercontent.com/<YOUR_GH_USER>/poe2-filter-sync/main/install.ps1' -OutFile \"$env:TEMP\poe2sounds.ps1\"; pwsh -ExecutionPolicy Bypass -File \"$env:TEMP\poe2sounds.ps1\" -Full"
+powershell -Command "iwr 'https://raw.githubusercontent.com/<YOUR_GH_USER>/poe2-filter-sync/main/install.ps1' -OutFile \"$env:TEMP\poe2sounds.ps1\"; powershell -ExecutionPolicy Bypass -File \"$env:TEMP\poe2sounds.ps1\" -Full"
 ```
 ```
 (Replace `<YOUR_GH_USER>` after the repo is pushed.)
